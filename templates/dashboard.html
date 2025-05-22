@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+    <meta charset="UTF-8" />
+    <title>ADSTERRA | TONXMEDIA GROUP</title>
+</head>
+
+<body>
+    <h1>ADSTERRA | TONXMEDIA GROUP</h1>
+
+    <form method="get" action="/">
+        <label for="preset" style="grid-column: 1 / 2;">Pilih Preset:</label>
+        <select name="preset" id="preset" onchange="this.form.submit()" style="grid-column: 2 / 3;">
+            <option value="">-- Custom --</option>
+            <option value="today" {% if preset=="today" %}selected{% endif %}>Today</option>
+            <option value="yesterday" {% if preset=="yesterday" %}selected{% endif %}>Yesterday</option>
+            <option value="last7" {% if preset=="last7" %}selected{% endif %}>Last 7 Days</option>
+            <option value="last30" {% if preset=="last30" %}selected{% endif %}>Last 30 Days</option>
+            <option value="thismonth" {% if preset=="thismonth" %}selected{% endif %}>This Month</option>
+            <option value="thisyear" {% if preset=="thisyear" %}selected{% endif %}>This Year</option>
+        </select>
+
+        <label for="start_date" style="grid-column: 1 / 2;">Start Date</label>
+        <label for="end_date" style="grid-column: 2 / 3;">End Date</label>
+
+        <input type="date" name="start_date" id="start_date" value="{{ start_date }}" style="grid-column: 1 / 2;"
+            onchange="document.getElementById('preset').value=''" />
+        <input type="date" name="end_date" id="end_date" value="{{ end_date }}" style="grid-column: 2 / 3;"
+            onchange="document.getElementById('preset').value=''" />
+
+        <!-- Dropdown Domain -->
+        <label for="domain" style="grid-column: 1 / 2; margin-top: 10px;">Domain</label>
+        <select name="domain" id="domain" style="grid-column: 2 / 3; margin-top: 10px;">
+            <option value="">-- Semua Domain --</option>
+            {% for d in domain_list %}
+            <option value="{{ d.id }}" {% if selected_domain==d.id %}selected{% endif %}>{{ d.name }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Dropdown Alias (placement) -->
+        <label for="placement" style="grid-column: 1 / 2; margin-top: 10px;">Alias (Placement)</label>
+        <select name="placement" id="placement" style="grid-column: 2 / 3; margin-top: 10px;">
+            <option value="">-- Semua Alias --</option>
+            <!-- Options akan di-load via JS -->
+        </select>
+
+        <button type="submit" style="grid-column: 1 / 3; margin-top: 20px;">Filter</button>
+    </form>
+
+    <hr />
+
+    <div class="box">
+        <div class="title">Summary Total</div>
+        <div>Earnings: ${{ summary.revenue if summary.revenue is not none else "N/A" }}</div>
+        <div>Impressions: {{ summary.impression if summary.impression is not none else "N/A" }}</div>
+        <div>Clicks: {{ summary.clicks if summary.clicks is not none else "N/A" }}</div>
+        <div>CTR: {{ summary.ctr if summary.ctr is not none else "N/A" }}%</div>
+        <div>CPM: ${{ summary.cpm if summary.cpm is not none else "N/A" }}</div>
+    </div>
+    
+    {% if stats %}
+    <h2>Data Per Hari</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Impressions</th>
+                <th>Clicks</th>
+                <th>CTR</th>
+                <th>CPM</th>
+                <th>Earnings</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in stats %}
+            <tr>
+                <td>{{ item.date }}</td>
+                <td>{{ item.impression }}</td>
+                <td>{{ item.clicks }}</td>
+                <td>{{ item.ctr }}%</td>
+                <td>${{ item.cpm }}</td>
+                <td>${{ item.revenue }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Tidak ada data harian untuk tanggal yang dipilih.</p>
+    {% endif %}
+
+    <script>
+        // Fungsi load alias berdasarkan domain terpilih
+        async function loadAliases(domainId, selectedPlacementId = null) {
+            const aliasSelect = document.getElementById("placement");
+            aliasSelect.innerHTML = '<option value="">-- Semua Alias --</option>';
+
+            if (!domainId) {
+                return; // kalau gak pilih domain, kosongkan alias
+            }
+
+            try {
+                const resp = await fetch(`/placements/${domainId}`);
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const items = data.items || [];
+                    items.forEach(item => {
+                        const opt = document.createElement("option");
+                        opt.value = item.id;
+                        opt.text = item.alias || item.title || "No Alias";
+                        if (selectedPlacementId && selectedPlacementId == item.id) {
+                            opt.selected = true;
+                        }
+                        aliasSelect.appendChild(opt);
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to load aliases:", error);
+            }
+        }
+
+        document.getElementById("domain").addEventListener("change", function () {
+            const domainId = this.value;
+            loadAliases(domainId);
+        });
+
+        // Load alias saat page load jika domain sudah terpilih
+        window.addEventListener("DOMContentLoaded", () => {
+            const domainId = "{{ selected_domain }}";
+            const placementId = "{{ selected_placement }}";
+            if (domainId) {
+                loadAliases(domainId, placementId);
+            }
+        });
+    </script>
+
+</body>
+
+</html>

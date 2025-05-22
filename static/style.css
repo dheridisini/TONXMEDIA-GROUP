@@ -1,0 +1,508 @@
+/* ===== Reset & Base ===== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #222;
+    scroll-behavior: smooth;
+}
+
+body {
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ===== Container & Layout ===== */
+
+h1 {
+    font-weight: 700;
+    font-size: 2.8rem;
+    margin-bottom: 30px;
+    color: #0077cc;
+    text-align: center;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 3px rgba(0, 119, 204, 0.3);
+}
+
+/* Form Styling */
+form {
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 900px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* 2 kolom sama besar */
+    grid-template-rows: auto auto auto;
+    gap: 1rem 1.5rem;
+    margin-bottom: 40px;
+}
+
+/* Pilih Preset label + select di 2 kolom gabung */
+form label[for="preset"],
+form select#preset {
+    grid-column: 1 / 3;
+    /* dua kolom */
+    width: 250px;
+    /* ukuran tetap */
+    justify-self: start;
+}
+
+form label[for="preset"] {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.3rem;
+}
+
+form select#preset {
+    grid-column: 1 / 3;
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    outline-offset: 2px;
+    outline-color: transparent;
+    width: 100%;
+    /* tambahkan ini supaya full */
+}
+
+/* Start Date: label di atas input */
+form label[for="start_date"] {
+    grid-column: 1 / 2;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+form input#start_date {
+    grid-column: 1 / 2;
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    outline-offset: 2px;
+    outline-color: transparent;
+    width: 100%;
+}
+
+/* End Date: label di atas input */
+form label[for="end_date"] {
+    grid-column: 2 / 3;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+form input#end_date {
+    grid-column: 2 / 3;
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    outline-offset: 2px;
+    outline-color: transparent;
+    width: 100%;
+}
+
+/* Tombol Filter full lebar di bawah, posisinya tengah */
+form button {
+    grid-column: 1 / 3;
+    padding: 10px 15px;
+    background-color: #0077cc;
+    color: white;
+    border: none;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    justify-self: center;
+    width: 180px;
+}
+
+form button:hover,
+form button:focus {
+    background-color: #005fa3;
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 95, 163, 0.6);
+}
+
+/* Hover & focus states untuk select dan date inputs */
+form select:hover,
+form input[type="date"]:hover {
+    border-color: #0077cc;
+}
+
+form select:focus,
+form input[type="date"]:focus {
+    border-color: #005fa3;
+    outline-color: #005fa3;
+    box-shadow: 0 0 8px rgba(0, 95, 163, 0.4);
+}
+
+/* Box & Title */
+.box {
+    background-color: #fff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    padding: 25px 30px;
+    width: 100%;
+    max-width: 900px;
+    /* disamakan dengan table */
+    margin: 0 auto 35px auto;
+    /* agar sejajar tengah seperti table */
+    user-select: none;
+}
+
+.box .title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0077cc;
+    margin-bottom: 15px;
+    border-bottom: 3px solid #0077cc;
+    padding-bottom: 8px;
+    letter-spacing: 1.1px;
+}
+
+/* Summary Total Content */
+.box div {
+    font-size: 1.15rem;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+/* Table Styles */
+h2 {
+    margin-bottom: 18px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0077cc;
+    text-align: center;
+    user-select: none;
+}
+
+table {
+    width: 100%;
+    max-width: 900px;
+    border-collapse: collapse;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 0 auto 50px auto;
+    background-color: #fff;
+}
+
+thead {
+    background-color: #0077cc;
+    color: #fff;
+    font-weight: 700;
+    user-select: none;
+}
+
+thead th {
+    padding: 14px 18px;
+    text-align: left;
+    letter-spacing: 0.04em;
+    font-size: 1.05rem;
+}
+
+tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+    cursor: default;
+}
+
+tbody tr:hover {
+    background-color: #f0faff;
+}
+
+tbody td {
+    padding: 14px 18px;
+    font-size: 1.05rem;
+    color: #444;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    tbody tr {
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        padding: 15px;
+        background-color: #fff;
+    }
+
+    tbody td {
+        padding-left: 50%;
+        position: relative;
+        text-align: left;
+        font-size: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    tbody td::before {
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        white-space: nowrap;
+        font-weight: 700;
+        color: #0077cc;
+    }
+
+    tbody td:nth-of-type(1)::before {
+        content: "Tanggal";
+    }
+
+    tbody td:nth-of-type(2)::before {
+        content: "Earnings";
+    }
+
+    tbody td:nth-of-type(3)::before {
+        content: "Impressions";
+    }
+
+    tbody td:nth-of-type(4)::before {
+        content: "Clicks";
+    }
+
+    tbody td:nth-of-type(5)::before {
+        content: "CTR";
+    }
+
+    tbody td:nth-of-type(6)::before {
+        content: "CPM";
+    }
+}
+
+/* Paragraph no-data */
+p {
+    font-size: 1.1rem;
+    color: #888;
+    text-align: center;
+    margin-top: 40px;
+    font-style: italic;
+    user-select: none;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #0077cc;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #005fa3;
+}
+
+/* Accessibility: focus outlines */
+:focus-visible {
+    outline: 3px solid #005fa3;
+    outline-offset: 2px;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+body {
+    animation: fadeIn 0.8s ease forwards;
+}
+
+/* ===== Utility classes ===== */
+.text-center {
+    text-align: center !important;
+}
+
+.mb-1 {
+    margin-bottom: 0.5rem !important;
+}
+
+.mb-2 {
+    margin-bottom: 1rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 2rem !important;
+}
+
+/* ===== Additional refinements ===== */
+
+/* Button hover transition for future buttons */
+button,
+input[type="submit"],
+input[type="button"] {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Link styles */
+a {
+    color: #0077cc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover,
+a:focus {
+    color: #005fa3;
+    outline: none;
+    text-decoration: underline;
+}
+
+/* Form input focus enhancements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+    border: 2px solid #ddd;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+    border-color: #0077cc;
+    box-shadow: 0 0 8px rgba(0, 119, 204, 0.4);
+    outline: none;
+}
+
+/* Headings hierarchy */
+h2 {
+    letter-spacing: 1.1px;
+    margin-bottom: 20px;
+}
+
+h3 {
+    font-size: 1.5rem;
+    color: #0077cc;
+    margin-bottom: 12px;
+}
+
+/* Paragraph & text spacing */
+p {
+    margin-bottom: 15px;
+    line-height: 1.5;
+    color: #444;
+}
+
+/* Form grouping */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Small helper text */
+.small-text {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+/* ===== Footer Styling ===== */
+footer {
+    margin-top: auto;
+    padding: 15px 20px;
+    background-color: #0077cc;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    border-radius: 0 0 12px 12px;
+}
+
+/* ===== Media Queries for smaller devices ===== */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    form {
+        padding: 20px;
+        gap: 15px;
+    }
+
+    form label,
+    form select,
+    form input[type="date"],
+    form button {
+        flex: 1 1 100%;
+    }
+
+    .box {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    table {
+        max-width: 100%;
+    }
+
+    tbody td {
+        font-size: 0.9rem;
+    }
+}
+
+/* ===== End of style.css ===== */
+
