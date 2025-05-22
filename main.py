@@ -6,12 +6,15 @@ from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from fastapi.staticfiles import StaticFiles
+import logging
 
 load_dotenv()
 
 ADSTERRA_API_KEY = os.getenv("ADSTERRA_API_KEY")
 print("API KEY:", ADSTERRA_API_KEY)
 
+
+logging.basicConfig(level=logging.DEBUG)
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -193,7 +196,14 @@ async def dashboard(request: Request,
         "selected_placement": placement,
     })
 
-
+@app.exception_handler(Exception)
+async def all_exception_handler(request: Request, exc: Exception):
+    logging.error(f"Unexpected error: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Internal Server Error"}
+    )
+    
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
