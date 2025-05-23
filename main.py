@@ -6,15 +6,12 @@ from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from fastapi.staticfiles import StaticFiles
-import logging
 
 load_dotenv()
 
 ADSTERRA_API_KEY = os.getenv("ADSTERRA_API_KEY")
 print("API KEY:", ADSTERRA_API_KEY)
 
-
-logging.basicConfig(level=logging.DEBUG)
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -51,12 +48,11 @@ def get_preset_dates(preset: str):
         return today, today
 
 
-# Tambah endpoint baru untuk ambil placements (alias) berdasar domain
 @app.get("/placements/{domain}")
 async def get_placements(domain: int):
     url = f"https://api3.adsterratools.com/publisher/domain/{domain}/placements.json"
     headers = {
-        "X-API-Key": ADSTERRA_API_KEY,  # jangan hardcode di sini
+        "X-API-Key": ADSTERRA_API_KEY,
         "Accept": "application/json"
     }
 
@@ -65,14 +61,13 @@ async def get_placements(domain: int):
             resp = await client.get(url, headers=headers)
             if resp.status_code == 200:
                 data = resp.json()
-                items = data.get("items", [])  # kirim hanya items
+                items = data.get("items", [])
                 return JSONResponse(content={"items": items})
-            else:
-                print(f"Failed to fetch placements: HTTP {resp.status_code}")
     except Exception as e:
         print("Error get placements:", e)
 
     return JSONResponse(content={"items": []})
+
 
 @app.get("/domains")
 async def get_domains():
@@ -99,7 +94,8 @@ async def dashboard(request: Request,
                     end_date: str = Query(None),
                     preset: str = Query(None),
                     domain: str = Query(None),
-                    placement: str = Query(None)):
+                    placement: str = Query(None),
+                    group_by: str = Query("date")):
 
     if preset:
         start, end = get_preset_dates(preset)
@@ -113,11 +109,11 @@ async def dashboard(request: Request,
     start_str = start.isoformat()
     end_str = end.isoformat()
 
-    # Base URL API stats
     base_url = "https://api3.adsterratools.com/publisher/stats.json"
     params = {
         "start_date": start_str,
         "finish_date": end_str,
+        "group_by": group_by
     }
 
     if domain:
@@ -175,12 +171,8 @@ async def dashboard(request: Request,
         print("Exception:", e)
         stats_list = []
 
-    # *** Domain list fixed contoh (sesuaikan dengan domain yang lo punya)
-    # Bisa juga bikin endpoint /domains kalau mau dinamis, tapi ini contoh statis
     domain_list = [
-        {"id": 1597430, "name": "Domain 1597430"},
-        {"id": 1234567, "name": "Domain 1234567"},
-        # Tambah domain lain di sini sesuai kebutuhan
+        {"id": 1597430, "name": "1597430"},
     ]
 
     return templates.TemplateResponse("dashboard.html", {
@@ -194,16 +186,10 @@ async def dashboard(request: Request,
         "domain_list": domain_list,
         "selected_domain": domain,
         "selected_placement": placement,
+        "group_by": group_by
     })
 
-@app.exception_handler(Exception)
-async def all_exception_handler(request: Request, exc: Exception):
-    logging.error(f"Unexpected error: {exc}")
-    return JSONResponse(
-        status_code=500,
-        content={"message": "Internal Server Error"}
-    )
-    
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
