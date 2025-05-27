@@ -6,6 +6,10 @@ from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
+from fastapi import FastAPI, Request, Form, status, HTTPException
+from fastapi.responses import RedirectResponse
+
 
 load_dotenv()
 
@@ -15,6 +19,14 @@ print("API KEY:", ADSTERRA_API_KEY)
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Aktifkan middleware untuk session
+app.add_middleware(SessionMiddleware, secret_key="RAHASIA_SUPER_AMAN")
+
+# Dummy user database
+USER_DB = {
+    "tonxmedia": "Sukses2026"
+}
 
 
 def add_days(value, days):
@@ -88,6 +100,49 @@ async def get_domains():
     return JSONResponse(content={"items": []})
 
 
+
+# Cek apakah user sudah login
+
+
+def get_current_user(request: Request):
+    user = request.session.get("user")
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Belum login")
+    return user
+
+# Halaman login
+
+
+@app.get("/login")
+async def login_page(request: Request):
+    # Kalau sudah login, langsung ke dashboard
+    if request.session.get("user"):
+        return RedirectResponse(url="/", status_code=303)
+    return templates.TemplateResponse("login.html", {"request": request})
+
+# Proses login
+
+
+@app.post("/login")
+async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    request.session.clear()
+    if username in USER_DB and password == USER_DB[username]:
+        request.session["user"] = username
+        return RedirectResponse(url="/", status_code=303)
+    return templates.TemplateResponse("login.html", {
+        "request": request,
+        "error": "Login gagal. Cek kembali data Anda."
+    })
+
+# Logout
+
+
+@app.get("/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/login", status_code=303)
+
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request,
                     start_date: str = Query(None),
@@ -97,6 +152,12 @@ async def dashboard(request: Request,
                     placement: str = Query(None),
                     group_by: str = Query("date")):
 
+    # Cek apakah user sudah login
+    try:
+        get_current_user(request)
+    except HTTPException:
+        return RedirectResponse(url="/login", status_code=303)
+    
     if preset:
         start, end = get_preset_dates(preset)
     else:
