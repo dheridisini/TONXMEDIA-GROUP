@@ -3,3 +3,4 @@ uvicorn[standard]
 httpx
 python-dotenv
 jinja2
+itsdangerous
