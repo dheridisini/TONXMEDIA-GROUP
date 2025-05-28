@@ -233,7 +233,8 @@ async def dashboard(request: Request,
         stats_list = []
 
     domain_list = [
-        {"id": 1597430, "name": "1597430"},
+        {"id": 1597430, "name": "1597430 (DIRECTLINK)"},
+        {"id": 4638075, "name": "asupankitasemua.xyz"},
     ]
 
     return templates.TemplateResponse("dashboard.html", {
